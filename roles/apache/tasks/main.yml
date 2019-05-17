@@ -1,0 +1,15 @@
+---
+# tasks file for apache
+
+- name: Install apache2
+  apt: name=apache2 state=latest
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Start apache2
+  service: name=apache2 state=started enabled=true
+  when: ansible_distribution == 'Ubuntu'
+
+- name: Copy index.html file
+  copy: src={{ src_path }} dest={{ dest_path }}
+  notify: restart_apache
+

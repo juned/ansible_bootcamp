@@ -1,0 +1,4 @@
+---
+# vars file for apache
+src_path: index.html
+dest_path: /var/www/html
