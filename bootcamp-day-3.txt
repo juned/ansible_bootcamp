@@ -1,0 +1,358 @@
+
+Docker Volumes
+--------------------
+
+docker run -itd --name volume_test -v /docker_mount/:/root ubuntu:16.04
+docker exec -it ubuntu:16.04 /bin/bash
+
+
+
+docker commit volume_test my_image
+docker images
+
+
+docker run -itd --name webserver -p 80:80 my_image
+
+docker history my_image
+
+docker stop webserver
+docker rm webserver
+
+docker run -itd --name website -p 80:80 nginx
+docker logs website
+
+
+
+Docker Hub
+------------------------
+docker login
+docker tag my_image juned/nginx_server
+docker push juned/nginx_server
+
+
+
+docker build . -t juned/docker_example
+
+-------------------------------------------
+# Set appllication name
+
+APP_NAME="juned/myapp"
+CONTAINER="AddressBook"
+
+docker stop $CONTAINER
+docker rm $CONTAINER
+
+#RUNNING=$(sudo docker inspect --format="{{ .State.Running }}" $CONTAINER 2> /dev/null)
+
+#if [ $? -eq 1 ]; then
+#  echo "'$CONTAINER' does not exist."
+#else
+#  sudo docker rm -f $CONTAINER
+#fi
+
+rm -rf app
+mkdir app
+cd app
+
+cp /var/lib/jenkins/workspace/DevPackage/target/addressbook.war .
+
+cat << 'EOF' > Dockerfile
+FROM tomcat
+COPY addressbook.war /usr/local/tomcat/webapps
+CMD "catalina.sh" "run"
+EOF
+
+
+docker build . -t $APP_NAME:$BUILD_NUMBER
+docker push $APP_NAME:$BUILD_NUMBER
+
+docker run -itd --name "AddressBook" -p 80:8080 $APP_NAME:$BUILD_NUMBER
+
+echo "Application deployed successfully, please visit URL to access your application\n"
+
+
+echo "--------------------------------------------------------\n"
+echo "http://35.244.17.29/addressbook"
+echo "--------------------------------------------------------\n"
+
+-------------------------------------------
+
+
+
+
+
+Docker Swarm:
+-------------
+
+root@docker-server ~]# docker swarm init --advertise-addr 10.160.0.6
+Swarm initialized: current node (i1v16jqt22ra8kcffqqcwqkmw) is now a manager.
+
+To add a worker to this swarm, run the following command:
+
+docker swarm join --token SWMTKN-1-2wxgsa7gtu6n5bvy7ux23sqax7y8c9jhmqmj0ca6hvos7qsg07-598cs76ejtz25h3qxdzxdob1o 10.160.0.6:2377
+
+To add a manager to this swarm, run 'docker swarm join-token manager' and follow the instructions.
+
+
+root@jenkins-slave-1:~# docker swarm join --token SWMTKN-1-2wxgsa7gtu6n5bvy7ux23sqax7y8c9jhmqmj0ca6hvos7qsg07-598cs76ejtz25h3qxdzxdob1o 10.160.0.6:2377
+This node joined a swarm as a worker.
+
+
+[root@docker-server ~]# docker node ls
+ID                            HOSTNAME            STATUS              AVAILABILITY        MANAGER STATUS      ENGINE VERSION
+i1v16jqt22ra8kcffqqcwqkmw *   docker-server       Ready               Active              Leader              18.09.6
+jic3rwy5yifqztt4zsgzjljgd     jenkins-slave-1     Ready               Active                                  18.09.6
+7q6kt8rzaacqo6lei2ogqwjb3     jenkins-slave-2     Ready               Active                                  18.09.6
+
+
+docker service create --name webservice -p 80:80 nginx
+
+[root@docker-server ~]# docker service ls
+ID                  NAME                MODE                REPLICAS            IMAGE               PORTS
+mhp6eu01ed44        webservice          replicated          1/1                 nginx:latest        *:80->80/tcp
+
+REPLICAS
+desired state/ current status
+
+
+[root@docker-server ~]# docker ps
+CONTAINER ID        IMAGE               COMMAND                   CREATED             STATUS              PORTS                  NAMES
+a03c5c0e95c4        nginx:latest        "nginx -g 'daemon of…"    34 seconds ago      Up 27 seconds       80/tcp                 webservice.1.6pvfvsp7r0ldp5xw4p680jsrj
+659dcf12d10c        juned/myapp:17      "/bin/sh -c '\"catali…"   About an hour ago   Up About an hour    0.0.0.0:80->8080/tcp   AddressBook
+
+[root@docker-server ~]# docker stop a03c5c0e95c4
+a03c5c0e95c4
+
+[root@docker-server ~]# docker rm a03c5c0e95c4
+a03c5c0e95c4
+
+[root@docker-server ~]# docker service ps webservice
+ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE                ERROR                              PORTS
+b1yg3h6rfmc2        webservice.1        nginx:latest        docker-server       Running             Running about a minute ago                                      
+kvq6w04ofzr5         \_ webservice.1    nginx:latest        docker-server       Shutdown            Rejected 2 minutes ago       "cannot create a swarm scoped …"   
+smmtyfegx4xy         \_ webservice.1    nginx:latest        docker-server       Shutdown            Failed 2 minutes ago         "No such container: webservice…"   
+pzax3p9o2xcq         \_ webservice.1    nginx:latest        docker-server       Shutdown            Complete 2 minutes ago                                          
+yoh9uyf59hrs         \_ webservice.1    nginx:latest        docker-server       Shutdown            Complete 2 minutes ago     
+
+
+[root@docker-server ~]#  docker service scale webservice=10
+webservice scaled to 10
+overall progress: 10 out of 10 tasks 
+1/10: running   [==================================================>] 
+2/10: running   [==================================================>] 
+3/10: running   [==================================================>] 
+4/10: running   [==================================================>] 
+5/10: running   [==================================================>] 
+6/10: running   [==================================================>] 
+7/10: running   [==================================================>] 
+8/10: running   [==================================================>] 
+9/10: running   [==================================================>] 
+10/10: running   [==================================================>] 
+verify: Waiting 2 seconds to verify that tasks are stable... 
+
+
+
+Links:
+------------------------
+
+https://docs.docker.com/engine/reference/builder/
+https://kubernetes.io/docs/concepts/services-networking/service/
+https://container-solutions.com/kubernetes-deployment-strategies/
+http://kubernetesbyexample.com/labels/
+http://kubernetesbyexample.com/volumes/
+https://kubernetes.io/docs/concepts/storage/persistent-volumes/
+
+
+# Jenkins - Multiple slave plugin
+# Docker - Export custom image in tar.gz
+# Docker - Change port mapping
+# Docker - Docker directory
+
+
+
+
+
+===============================================================
+Kubernetes
+===============================================================
+[root@docker-server ~]# gcloud init
+[root@docker-server ~]# gcloud comoute instances list
+[root@docker-server ~]# gcloud container clusters create k8s-cluster --zone=asia-south1-c
+
+
+gcloud container clusters delete k8s-cluster --zone=asia-south1-c
+
+
+Controlled Manager - checks desired state, like a cronjob which makes sure system is in desired state
+Scheduler - sets task
+etcd - Gather facts
+Kuber-Proxy - Manages K8s network.
+Kubelet - creates pod (agent)
+cAdvisor - Container manager (Docker, LXC)
+Kubectl - Interacts with API server and other nodes
+
+
+[root@docker-server ~]# kubectl get nodes
+NAME                                         STATUS   ROLES    AGE   VERSION
+gke-k8s-cluster-default-pool-a692d342-6js2   Ready    <none>   22m   v1.11.8-gke.6
+gke-k8s-cluster-default-pool-a692d342-79k0   Ready    <none>   22m   v1.11.8-gke.6
+gke-k8s-cluster-default-pool-a692d342-t9c9   Ready    <none>   22m   v1.11.8-gke.6
+
+[root@docker-server k8s]# kubectl get pods
+No resources found.
+
+[root@docker-server k8s]# kubectl create -f pod.yml 
+pod/sample-pod created
+
+[root@docker-server k8s]# kubectl get pods
+NAME         READY   STATUS    RESTARTS   AGE
+sample-pod   1/1     Running   0          4m
+
+[root@docker-server k8s]# kubectl describe pods sample-pod
+
+[root@docker-server k8s]# curl 10.52.1.6:80
+<!DOCTYPE html>
+
+[root@docker-server k8s]#  kubectl get pods --show-labels
+NAME         READY   STATUS    RESTARTS   AGE   LABELS
+sample-pod   1/1     Running   0          14m   env=prod,type=DC
+
+[root@docker-server k8s]#  kubectl get pods --selector env=prod
+NAME         READY   STATUS    RESTARTS   AGE
+sample-pod   1/1     Running   0          15m
+
+
+[root@docker-server ~]# kubectl get pods -l env=prod
+NAME         READY   STATUS    RESTARTS   AGE
+sample-pod   1/1     Running   0          15h
+
+kubectl get pods -l 'env in (production, development)'
+kubectl delete pods -l 'env in (production, development)'
+
+================================
+Deployments -> Pods -> Container
+================================
+
+Deployments -> Replica Set -> Pods -> Container
+
+apiVersion: v1
+kind: Pod
+metadata:
+  name: sample-pod
+  labels:
+    env: prod #User defined, could be anything
+    type: DC
+spec:
+  containers:
+  - name: sample-cotainer
+    image: nginx
+    ports:
+    - containerPort: 80
+    - containerPort: 443
+
+
+
+
+
+[root@docker-server k8s]# kubectl create -f deployment.yml 
+deployment.extensions/sample-deployment created
+
+[root@docker-server k8s]# kubectl get pods
+NAME                                 READY   STATUS    RESTARTS   AGE
+sample-deployment-64f787bd47-sq2hn   1/1     Running   0          1m
+sample-deployment-64f787bd47-sqpbj   1/1     Running   0          1m
+sample-deployment-64f787bd47-zqdbc   1/1     Running   0          1m
+sample-pod                           1/1     Running   0          16h
+
+[root@docker-server k8s]# kubectl get deployments
+NAME                DESIRED   CURRENT   UP-TO-DATE   AVAILABLE   AGE
+sample-deployment   3         3         3            3           2m
+
+[root@docker-server k8s]# kubectl describe deployment sample-deployment
+Name:                   sample-deployment
+Namespace:              default
+CreationTimestamp:      Thu, 16 May 2019 04:15:28 +0000
+
+
+[root@docker-server k8s]# kubectl get rs
+NAME                           DESIRED   CURRENT   READY   AGE
+sample-deployment-64f787bd47   3         3         3       9m
+
+[root@docker-server k8s]# kubectl describe pods
+
+[root@docker-server k8s]# kubectl describe pods | grep -i IP
+IP:                 10.52.2.5
+IP:                 10.52.1.7
+IP:                 10.52.1.8
+IP:                 10.52.1.6
+
+[root@docker-server k8s]# kubectl describe pods | grep -i labels
+Labels:             app=my-app
+Labels:             app=my-app
+
+[root@docker-server k8s]# kubectl create -f service.yml 
+service/my-service created
+
+[root@docker-server k8s]# kubectl get service
+NAME         TYPE        CLUSTER-IP     EXTERNAL-IP   PORT(S)   AGE
+kubernetes   ClusterIP   10.55.240.1    <none>        443/TCP   17h
+my-service   ClusterIP   10.55.241.32   <none>        80/TCP    13s
+
+[root@docker-server k8s]# kubectl describe service my-service
+Name:              my-service
+Namespace:         default
+Labels:            <none>
+Annotations:       <none>
+Selector:          app=my-app
+Type:              ClusterIP
+IP:                10.55.241.32
+Port:              http  80/TCP
+TargetPort:        80/TCP
+Endpoints:         10.52.1.7:80,10.52.1.8:80,10.52.2.5:80
+Session Affinity:  None
+Events:            <none>
+
+[root@docker-server k8s]# kubectl delete service.yml 
+[root@docker-server k8s]# kubectl delete -f service.yml 
+service "my-service" deleted
+
+[root@docker-server k8s]# docker network ls
+NETWORK ID          NAME                DRIVER              SCOPE
+1f38cc2f4715        bridge              bridge              local
+bc2527e0dd35        docker_gwbridge     bridge              local
+03eb9066ad63        host                host                local
+xf9ynlz30wfd        ingress             overlay             swarm
+c8f6ea47c3b0        none                null                local
+
+
+[root@docker-server k8s]# kubectl get svc
+
+
+[root@docker-server k8s]# kubectl get pods -o wide --all-namespaces
+
+
+[root@docker-server k8s]# kubectl apply -f addressbook_deploy.yml --record
+
+[root@docker-server k8s]# kubectl rollout status deployment addressbook-deployment
+deployment "addressbook-deployment" successfully rolled out
+
+[root@docker-server k8s]# kubectl get rs
+NAME                                DESIRED   CURRENT   READY   AGE
+addressbook-deployment-5fd67646c5   3         3         3       10m
+addressbook-deployment-66b54c888c   0         0         0       1h
+sample-deployment-64f787bd47 
+
+[root@docker-server k8s]# kubectl rollout undo deployment addressbook-deployment --to-revision=1
+
+[root@docker-server k8s]# kubectl get rs
+NAME                                DESIRED   CURRENT   READY   AGE
+addressbook-deployment-5fd67646c5   0         0         0       26m
+addressbook-deployment-66b54c888c   3         3         3       2h
+sample-deployment-64f787bd47        3         3         3       6h
+
+       3         3         3       6h
+
+
+
+
+

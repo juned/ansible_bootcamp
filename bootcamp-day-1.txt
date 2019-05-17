@@ -1,0 +1,53 @@
+
+git commit -a -m "Sample commit" // to add and commit at the same time
+
+git ignore file
+.gitignore
+
+git log --oneline
+git config --list --show-origin
+
+
+Changes to be committed:
+  (use "git reset HEAD <file>..." to unstage)
+        modified:   README.md
+
+
+
+docker pull jenkins
+docker run -p 80:8080 -p 50000:50000 jenkins
+
+
+Jenkins is not limited to CI CD
+
+
+1aea023f39d049348b453597382769f1
+
+
+
+
+iptables -A INPUT -i ens4 -p tcp --dport 80 -j ACCEPT
+iptables -A INPUT -i ens4 -p tcp --dport 8080 -j ACCEPT
+iptables -A PREROUTING -t nat -i ens4 -p tcp --dport 80 -j REDIRECT --to-port 8080
+
+
+DevOps Pipleline
+1) Compile
+2) Test
+3) Code Review
+4) Package
+5) Deploy
+
+PMD:plugin
+
+/var/lib/jenkins/workspace/DevTest/target/surefire-reports
+
+
+
+Links:
+*****
+
+https://www.atlassian.com/git/tutorials/atlassian-git-cheatsheet
+https://github.com/lucassha/DevOps-Student-Roadmap
+https://wiki.jenkins.io/display/JENKINS/Running+Jenkins+on+Port+80+or+443+using+iptables
+http://35.244.48.216/env-vars.html/

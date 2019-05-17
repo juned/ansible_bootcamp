@@ -1,0 +1,29 @@
+Groovy
+-------
+https://jenkins.io/doc/book/pipeline/syntax/
+
+Pipeline Syntax
+
+
+Docker
+------
+
+Helps to get into microservices
+
+Chroot - Change Root
+
+
+#All containers
+docker ps -a 
+
+
+
+docker run -itd --name tcs_container nginx
+docker run -itd --name tcs_container -p 80:8080 tomcat
+docker run -itd --name tcs_container -p 80:80 nginx
+
+docker exec -it tcs_container /bin/bash
+
+
+docker run -p 80:8080 -p 50000:50000 jenkins
+
