@@ -1,0 +1,35 @@
+---
+
+- hosts: infra
+  become: true
+  gather_facts: true
+
+  vars:
+    src_path: /etc/ansible/scripts/index.html
+    dest_path: /var/www/html/
+
+  tasks:
+  - name: Install apache2
+    apt: name=apache2 state=latest
+    when: ansible_distribution == 'Ubuntu'
+
+  - name: Install httpd
+    yum: name=httpd state=latest
+    when: ansible_distribution == 'CentOS'
+
+  - name: Start apache2
+    service: name=apache2 state=started enabled=true
+    when: ansible_distribution == 'Ubuntu'
+
+  - name: Start httpd
+    service: name=httpd state=started enabled=true
+    when: ansible_distribution== 'CentOS'
+
+  - name: Copy index.html file
+    copy: src={{ src_path }} dest={{ dest_path }}
+
+  handlers:
+  - name: restart apache2
+    service:
+      name: apache2
+      state: restarted

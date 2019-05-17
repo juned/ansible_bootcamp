@@ -4,7 +4,7 @@
   gather_facts: false
  
   tasks:
-  - name : Install httpd server
+  - name : Install packages server
     apt:
-      name: apache2
+      name: ['ntp', 'wget', 'mlocate']
       state: latest
