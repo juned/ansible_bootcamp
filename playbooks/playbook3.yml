@@ -1,0 +1,10 @@
+---
+
+- hosts: infra
+  gather_facts: false
+ 
+  tasks:
+  - name : Install httpd server
+    apt:
+      name: apache2
+      state: latest

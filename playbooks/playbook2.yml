@@ -1,0 +1,14 @@
+---
+
+- hosts: infra
+  become: true
+  gather_facts: false
+
+  tasks:
+  - name: Copy script
+    copy:
+      src: /etc/ansible/scripts/test.sh
+      dest: /tmp/test.sh
+
+  - name: Execute script
+    command: bash /tmp/test.sh

@@ -1,0 +1,15 @@
+---
+
+- hosts: all
+  become: true
+
+  tasks:
+  - name: Copy file example
+    copy:
+      src: /tmp/ansiblefile
+      dest: /tmp
+
+  - name: Create User Example
+    user:
+      name: juned
+      password: j#123
