@@ -117,8 +117,8 @@ desired state/ current status
 
 [root@docker-server ~]# docker ps
 CONTAINER ID        IMAGE               COMMAND                   CREATED             STATUS              PORTS                  NAMES
-a03c5c0e95c4        nginx:latest        "nginx -g 'daemon of…"    34 seconds ago      Up 27 seconds       80/tcp                 webservice.1.6pvfvsp7r0ldp5xw4p680jsrj
-659dcf12d10c        juned/myapp:17      "/bin/sh -c '\"catali…"   About an hour ago   Up About an hour    0.0.0.0:80->8080/tcp   AddressBook
+a03c5c0e95c4        nginx:latest        "nginx -g 'daemon ofâ€¦"    34 seconds ago      Up 27 seconds       80/tcp                 webservice.1.6pvfvsp7r0ldp5xw4p680jsrj
+659dcf12d10c        juned/myapp:17      "/bin/sh -c '\"cataliâ€¦"   About an hour ago   Up About an hour    0.0.0.0:80->8080/tcp   AddressBook
 
 [root@docker-server ~]# docker stop a03c5c0e95c4
 a03c5c0e95c4
@@ -129,8 +129,8 @@ a03c5c0e95c4
 [root@docker-server ~]# docker service ps webservice
 ID                  NAME                IMAGE               NODE                DESIRED STATE       CURRENT STATE                ERROR                              PORTS
 b1yg3h6rfmc2        webservice.1        nginx:latest        docker-server       Running             Running about a minute ago                                      
-kvq6w04ofzr5         \_ webservice.1    nginx:latest        docker-server       Shutdown            Rejected 2 minutes ago       "cannot create a swarm scoped …"   
-smmtyfegx4xy         \_ webservice.1    nginx:latest        docker-server       Shutdown            Failed 2 minutes ago         "No such container: webservice…"   
+kvq6w04ofzr5         \_ webservice.1    nginx:latest        docker-server       Shutdown            Rejected 2 minutes ago       "cannot create a swarm scoped â€¦"   
+smmtyfegx4xy         \_ webservice.1    nginx:latest        docker-server       Shutdown            Failed 2 minutes ago         "No such container: webserviceâ€¦"   
 pzax3p9o2xcq         \_ webservice.1    nginx:latest        docker-server       Shutdown            Complete 2 minutes ago                                          
 yoh9uyf59hrs         \_ webservice.1    nginx:latest        docker-server       Shutdown            Complete 2 minutes ago     
 
@@ -176,7 +176,7 @@ https://kubernetes.io/docs/concepts/storage/persistent-volumes/
 Kubernetes
 ===============================================================
 [root@docker-server ~]# gcloud init
-[root@docker-server ~]# gcloud comoute instances list
+[root@docker-server ~]# gcloud compute instances list
 [root@docker-server ~]# gcloud container clusters create k8s-cluster --zone=asia-south1-c
 
 
